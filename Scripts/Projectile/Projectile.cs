@@ -4,10 +4,11 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
     [SerializeField] float moveSpeed = 10f;
-
     [SerializeField] protected Vector2 moveDirection;
 
-    void OnEnable()
+    protected GameObject target;
+
+    protected virtual void OnEnable()
     {
         StartCoroutine(MoveDirectly());
     }
