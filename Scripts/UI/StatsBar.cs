@@ -29,6 +29,11 @@ public class StatsBar : MonoBehaviour
         waitForDelayFill = new WaitForSeconds(fillDelay);
     }
 
+    void OnDisable()
+    {
+        StopAllCoroutines();
+    }
+
     public virtual void Initialize(float currentValue, float maxValue)
     {
         currentFillAmount = currentValue / maxValue;
@@ -50,8 +55,10 @@ public class StatsBar : MonoBehaviour
         {
             fillImageFront.fillAmount = targetFillAmount;
             bufferedFillingCoroutine = StartCoroutine(BufferedFillingCoroutine(fillImageBack));
-        }
 
+            return;
+        }
+        
         if (currentFillAmount < targetFillAmount)
         {
             fillImageBack.fillAmount = targetFillAmount;
