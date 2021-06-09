@@ -25,13 +25,11 @@ public class Projectile : MonoBehaviour
         }
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+    protected virtual void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.TryGetComponent<Character>(out Character character))
         {
             character.TakeDamage(damage);
-            // var contactPoint = collision.GetContact(0);
-            // PoolManager.Release(hitVFX, contactPoint.point, Quaternion.LookRotation(contactPoint.normal));
             PoolManager.Release(hitVFX, collision.GetContact(0).point, Quaternion.LookRotation(collision.GetContact(0).normal));
             gameObject.SetActive(false);
         }
