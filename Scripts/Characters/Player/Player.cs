@@ -30,17 +30,33 @@ public class Player : Character
     [SerializeField, Range(0, 2)] int weaponPower = 0;
     [SerializeField] float fireInterval = 0.2f;
 
+    [Header("---- DODGE ----")]
+    [SerializeField, Range(0, 100)] int dodgeEnergyCost = 25;
+    [SerializeField] float maxRoll = 720f;
+    [SerializeField] float rollSpeed = 360f;
+    [SerializeField] Vector3 dodgeScale = new Vector3(0.5f, 0.5f, 0.5f);
+
+    bool isDodging = false;
+
+    float currentRoll;
+    float dodgeDuration;
+
     WaitForSeconds waitForFireInterval;
     WaitForSeconds waitHealthRegenerateTime;
 
-    new Rigidbody2D rigidbody;
-
     Coroutine moveCoroutine;
     Coroutine healthRegenerateCoroutine;
+    
+    new Rigidbody2D rigidbody;
+
+    new Collider2D collider;
 
     void Awake()
     {
         rigidbody = GetComponent<Rigidbody2D>();
+        collider = GetComponent<Collider2D>();
+
+        dodgeDuration = maxRoll / rollSpeed;
     }
 
     protected override void OnEnable()
@@ -51,6 +67,7 @@ public class Player : Character
         input.onStopMove += StopMove;
         input.onFire += Fire;
         input.onStopFire += StopFire;
+        input.onDodge += Dodge;
     }
 
     void OnDisable()
@@ -59,6 +76,7 @@ public class Player : Character
         input.onStopMove -= StopMove;
         input.onFire -= Fire;
         input.onStopFire -= StopFire;
+        input.onDodge -= Dodge;
     }
 
     void Start()
@@ -198,6 +216,86 @@ public class Player : Character
 
             yield return waitForFireInterval;
         }
+    }
+    #endregion
+
+    #region DODGE
+    void Dodge()
+    {
+        if (isDodging || !PlayerEnergy.Instance.IsEnough(dodgeEnergyCost)) return;
+
+        StartCoroutine(nameof(DodgeCoroutine));
+    }
+
+    IEnumerator DodgeCoroutine()
+    {
+        isDodging = true;
+        PlayerEnergy.Instance.Use(dodgeEnergyCost);
+        collider.isTrigger = true;
+        currentRoll = 0f;
+
+        // Change player's scale 改变玩家的缩放值
+        // * Method 01
+        // var scale = transform.localScale;
+
+        // while (currentRoll < maxRoll)
+        // {
+        //     currentRoll += rollSpeed * Time.deltaTime;
+        //     transform.rotation = Quaternion.AngleAxis(currentRoll, Vector3.right);
+
+        //     if (currentRoll < maxRoll / 2f)
+        //     {
+        //         scale.x = Mathf.Clamp(scale.x - Time.deltaTime / dodgeDuration, dodgeScale.x, 1f);
+        //         scale.y = Mathf.Clamp(scale.y - Time.deltaTime / dodgeDuration, dodgeScale.y, 1f);
+        //         scale.z = Mathf.Clamp(scale.z - Time.deltaTime / dodgeDuration, dodgeScale.z, 1f);
+        //     }
+        //     else 
+        //     {
+        //         scale.x = Mathf.Clamp(scale.x + Time.deltaTime / dodgeDuration, dodgeScale.x, 1f);
+        //         scale.y = Mathf.Clamp(scale.y + Time.deltaTime / dodgeDuration, dodgeScale.y, 1f);
+        //         scale.z = Mathf.Clamp(scale.z + Time.deltaTime / dodgeDuration, dodgeScale.z, 1f);
+        //     }
+
+        //     transform.localScale = scale;
+
+        //     yield return null;
+        // }
+
+        // * Method 02
+        // var t1 = 0f;
+        // var t2 = 0f;
+
+        // while (currentRoll < maxRoll)
+        // {
+        //     currentRoll += rollSpeed * Time.deltaTime;
+        //     transform.rotation = Quaternion.AngleAxis(currentRoll, Vector3.right);
+
+        //     if (currentRoll < maxRoll / 2f)
+        //     {
+        //         t1 += Time.deltaTime / dodgeDuration;
+        //         transform.localScale = Vector3.Lerp(transform.localScale, dodgeScale, t1);
+        //     }
+        //     else 
+        //     {
+        //         t2 += Time.deltaTime / dodgeDuration;
+        //         transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one, t2);
+        //     }
+
+        //     yield return null;
+        // }
+
+        // * Method 3
+        while (currentRoll < maxRoll)
+        {
+            currentRoll += rollSpeed * Time.deltaTime;
+            transform.rotation = Quaternion.AngleAxis(currentRoll, Vector3.right);
+            transform.localScale = BezierCurve.QuadraticPoint(Vector3.one, Vector3.one, dodgeScale, currentRoll / maxRoll);
+
+            yield return null;
+        }
+
+        collider.isTrigger = false;
+        isDodging = false;
     }
     #endregion
 }

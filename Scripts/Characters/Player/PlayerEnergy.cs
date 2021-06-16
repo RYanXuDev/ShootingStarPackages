@@ -13,6 +13,7 @@ public class PlayerEnergy : Singleton<PlayerEnergy>
     void Start()
     {
         energyBar.Initialize(energy, MAX);
+        Obtain(MAX);
     }
 
     public void Obtain(int value)
