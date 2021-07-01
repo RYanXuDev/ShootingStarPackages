@@ -4,6 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class Player : Character
 {
+    #region FIELDS
     [SerializeField] StatsBar_HUD statsBar_HUD;
     [SerializeField] bool regenerateHealth = true;
     [SerializeField] float healthRegenerateTime;
@@ -50,7 +51,9 @@ public class Player : Character
     new Rigidbody2D rigidbody;
 
     new Collider2D collider;
+    #endregion
 
+    #region UNITY EVENT FUNCTIONS
     void Awake()
     {
         rigidbody = GetComponent<Rigidbody2D>();
@@ -90,7 +93,9 @@ public class Player : Character
 
         input.EnableGameplayInput();
     }
+    #endregion
 
+    #region HEALTH
     public override void TakeDamage(float damage)
     {
         base.TakeDamage(damage);
@@ -121,6 +126,7 @@ public class Player : Character
         statsBar_HUD.UpdateStats(0f, maxHealth);
         base.Die();
     }
+    #endregion
 
     #region MOVE
     void Move(Vector2 moveInput)
@@ -130,10 +136,8 @@ public class Player : Character
             StopCoroutine(moveCoroutine);
         }
 
-        // Quaternion moveRotation = Quaternion.AngleAxis(moveRotationAngle * moveInput.y, Vector3.right);
-        // moveCoroutine = StartCoroutine(MoveCoroutine(accelerationTime, moveInput.normalized * moveSpeed, moveRotation));
         moveCoroutine = StartCoroutine(MoveCoroutine(accelerationTime, moveInput.normalized * moveSpeed, Quaternion.AngleAxis(moveRotationAngle * moveInput.y, Vector3.right)));
-        StartCoroutine(MovePositionLimitCoroutine());
+        StartCoroutine(nameof(MovePositionLimitCoroutine));
     }
 
     void StopMove()
@@ -144,7 +148,7 @@ public class Player : Character
         }
 
         moveCoroutine = StartCoroutine(MoveCoroutine(decelerationTime, Vector2.zero, Quaternion.identity));
-        StopCoroutine(MovePositionLimitCoroutine());
+        StopCoroutine(nameof(MovePositionLimitCoroutine));
     }
 
     IEnumerator MoveCoroutine(float time, Vector2 moveVelocity, Quaternion moveRotation)
@@ -159,15 +163,6 @@ public class Player : Character
 
             yield return null;
         }
-
-        // while (t < time)
-        // {
-        //     t += Time.fixedDeltaTime;
-        //     rigidbody.velocity = Vector2.Lerp(rigidbody.velocity, moveVelocity, t / time);
-        //     transform.rotation = Quaternion.Lerp(transform.rotation, moveRotation, t / time);
-
-        //     yield return null;
-        // }
     }
 
     IEnumerator MovePositionLimitCoroutine()
@@ -234,57 +229,6 @@ public class Player : Character
         collider.isTrigger = true;
         currentRoll = 0f;
 
-        // Change player's scale 改变玩家的缩放值
-        // * Method 01
-        // var scale = transform.localScale;
-
-        // while (currentRoll < maxRoll)
-        // {
-        //     currentRoll += rollSpeed * Time.deltaTime;
-        //     transform.rotation = Quaternion.AngleAxis(currentRoll, Vector3.right);
-
-        //     if (currentRoll < maxRoll / 2f)
-        //     {
-        //         scale.x = Mathf.Clamp(scale.x - Time.deltaTime / dodgeDuration, dodgeScale.x, 1f);
-        //         scale.y = Mathf.Clamp(scale.y - Time.deltaTime / dodgeDuration, dodgeScale.y, 1f);
-        //         scale.z = Mathf.Clamp(scale.z - Time.deltaTime / dodgeDuration, dodgeScale.z, 1f);
-        //     }
-        //     else 
-        //     {
-        //         scale.x = Mathf.Clamp(scale.x + Time.deltaTime / dodgeDuration, dodgeScale.x, 1f);
-        //         scale.y = Mathf.Clamp(scale.y + Time.deltaTime / dodgeDuration, dodgeScale.y, 1f);
-        //         scale.z = Mathf.Clamp(scale.z + Time.deltaTime / dodgeDuration, dodgeScale.z, 1f);
-        //     }
-
-        //     transform.localScale = scale;
-
-        //     yield return null;
-        // }
-
-        // * Method 02
-        // var t1 = 0f;
-        // var t2 = 0f;
-
-        // while (currentRoll < maxRoll)
-        // {
-        //     currentRoll += rollSpeed * Time.deltaTime;
-        //     transform.rotation = Quaternion.AngleAxis(currentRoll, Vector3.right);
-
-        //     if (currentRoll < maxRoll / 2f)
-        //     {
-        //         t1 += Time.deltaTime / dodgeDuration;
-        //         transform.localScale = Vector3.Lerp(transform.localScale, dodgeScale, t1);
-        //     }
-        //     else 
-        //     {
-        //         t2 += Time.deltaTime / dodgeDuration;
-        //         transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one, t2);
-        //     }
-
-        //     yield return null;
-        // }
-
-        // * Method 3
         while (currentRoll < maxRoll)
         {
             currentRoll += rollSpeed * Time.deltaTime;

@@ -4,7 +4,11 @@ using UnityEngine;
 
 public class EnemyManager : Singleton<EnemyManager>
 {
+    public int WaveNumber => waveNumber;
+    public float TimeBetweenWaves => timeBetweenWaves;
+
     [SerializeField] bool spawnEnemy = true;
+    [SerializeField] GameObject waveUI;
     [SerializeField] GameObject[] enemyPrefabs;
     [SerializeField] float timeBetweenSpawns = 1f;
     [SerializeField] float timeBetweenWaves = 1f;
@@ -17,7 +21,7 @@ public class EnemyManager : Singleton<EnemyManager>
     List<GameObject> enemyList;
 
     WaitForSeconds waitTimeBetweenSpawns;
-    WaitForSeconds waitTImeBetweenWaves;
+    WaitForSeconds waitTimeBetweenWaves;
 
     WaitUntil waitUntilNoEnemy;
 
@@ -26,7 +30,7 @@ public class EnemyManager : Singleton<EnemyManager>
         base.Awake();
         enemyList = new List<GameObject>();
         waitTimeBetweenSpawns = new WaitForSeconds(timeBetweenSpawns);
-        waitTImeBetweenWaves = new WaitForSeconds(timeBetweenWaves);
+        waitTimeBetweenWaves = new WaitForSeconds(timeBetweenWaves);
         waitUntilNoEnemy = new WaitUntil(() => enemyList.Count == 0);
     }
 
@@ -35,7 +39,13 @@ public class EnemyManager : Singleton<EnemyManager>
         while (spawnEnemy)
         {
             yield return waitUntilNoEnemy;
-            yield return waitTImeBetweenWaves;
+
+            waveUI.SetActive(true);
+
+            yield return waitTimeBetweenWaves;
+
+            waveUI.SetActive(false);
+            
             yield return StartCoroutine(nameof(RandomlySpawnCoroutine));
         }
     }
