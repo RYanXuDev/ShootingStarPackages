@@ -65,11 +65,12 @@ public class DynamicWaveUI : MonoBehaviour
     IEnumerator UIMoveCoroutine(RectTransform rect, Vector2 position)
     {
         float t = 0f;
+        Vector2 localPosition = rect.localPosition;
 
         while (t < 1f)
         {
             t += Time.deltaTime / animationTime;
-            rect.localPosition = Vector2.Lerp(rect.localPosition, position, t);
+            rect.localPosition = Vector2.Lerp(localPosition, position, t);
 
             yield return null;
         }
@@ -87,11 +88,12 @@ public class DynamicWaveUI : MonoBehaviour
     IEnumerator UIScaleCoroutine(RectTransform rect, Vector2 scale)
     {
         float t = 0f;
+        Vector2 localScale = rect.localScale;
 
         while (t < 1f)
         {
             t += Time.deltaTime / animationTime;
-            rect.localScale = Vector2.Lerp(rect.localScale, scale, t);
+            rect.localScale = Vector2.Lerp(localScale, scale, t);
 
             yield return null;
         }

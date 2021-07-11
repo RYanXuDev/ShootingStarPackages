@@ -43,9 +43,16 @@ public class Player : Character
 
     float currentRoll;
     float dodgeDuration;
+    float t;
+
+    Vector2 previousVelocity;
+
+    Quaternion previousRotation;
 
     WaitForSeconds waitForFireInterval;
     WaitForSeconds waitHealthRegenerateTime;
+
+    WaitForFixedUpdate waitForFixedUpdate = new WaitForFixedUpdate();
 
     Coroutine moveCoroutine;
     Coroutine healthRegenerateCoroutine;
@@ -155,15 +162,17 @@ public class Player : Character
 
     IEnumerator MoveCoroutine(float time, Vector2 moveVelocity, Quaternion moveRotation)
     {
-        float t = 0f;
+        t = 0f;
+        previousVelocity = rigidbody.velocity;
+        previousRotation = transform.rotation;
 
         while (t < 1f)
         {
             t += Time.fixedDeltaTime / time;
-            rigidbody.velocity = Vector2.Lerp(rigidbody.velocity, moveVelocity, t);
-            transform.rotation = Quaternion.Lerp(transform.rotation, moveRotation, t);
+            rigidbody.velocity = Vector2.Lerp(previousVelocity, moveVelocity, t);
+            transform.rotation = Quaternion.Lerp(previousRotation, moveRotation, t);
 
-            yield return null;
+            yield return waitForFixedUpdate;
         }
     }
 
