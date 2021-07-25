@@ -11,8 +11,6 @@ class LightFade : MonoBehaviour
 
     new Light light;
 
-    float t;
-
     WaitForSeconds waitDelayTime;
 
     void Awake()
@@ -36,12 +34,13 @@ class LightFade : MonoBehaviour
 
         light.intensity = startIntensity;
         light.enabled = true;
-        t = 0f;
 
-        while (t < 1f)
+        float t = 0f;
+
+        while (t < fadeDuration)
         {
             t += Time.deltaTime / fadeDuration;
-            light.intensity = Mathf.Lerp(startIntensity, finalIntensity, t);
+            light.intensity = Mathf.Lerp(startIntensity, finalIntensity, t / fadeDuration);
 
             yield return null;
         }

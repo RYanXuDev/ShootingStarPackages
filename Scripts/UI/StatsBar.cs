@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class StatsBar : MonoBehaviour
 {
     [SerializeField] Image fillImageBack;
-    [SerializeField] Image fillImageFront;
+    [SerializeField] protected Image fillImageFront;
     [SerializeField] bool delayFill = true;
     [SerializeField] float fillDelay = 0.5f;
     [SerializeField] float fillSpeed = 0.1f;

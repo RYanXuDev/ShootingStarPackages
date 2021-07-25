@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class StatsBar_HUD : StatsBar
 {
-    [SerializeField] Text percentText;
+    [SerializeField] protected Text percentText;
 
     void SetPercentText()
     {
