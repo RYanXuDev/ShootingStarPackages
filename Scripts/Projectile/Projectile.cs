@@ -6,7 +6,7 @@ public class Projectile : MonoBehaviour
     [SerializeField] GameObject hitVFX;
     [SerializeField] AudioData[] hitSFX;
     [SerializeField] float damage;
-    [SerializeField] protected float moveSpeed = 10f;
+    [SerializeField] float moveSpeed = 10f;
     [SerializeField] protected Vector2 moveDirection;
 
     protected GameObject target;
@@ -14,45 +14,6 @@ public class Projectile : MonoBehaviour
     protected virtual void OnEnable()
     {
         StartCoroutine(MoveDirectlyCoroutine());
-    }
-
-    protected IEnumerator MoveDirectlyCoroutine()
-    {
-        while (gameObject.activeSelf)
-        {
-            transform.Translate(moveDirection * moveSpeed * Time.deltaTime);
-
-            yield return null;
-        }
-    }
-    
-    protected IEnumerator TrackTargetCoroutine(float moveRotationAngle)
-    {
-        var targetDirection = Vector3.zero;
-
-        while (gameObject.activeSelf)
-        {
-            if (target.activeSelf)
-            {
-                targetDirection = target.transform.position - transform.position;
-                transform.rotation = Quaternion.AngleAxis(Mathf.Atan2(targetDirection.y, targetDirection.x) * Mathf.Rad2Deg, Vector3.forward);
-                transform.rotation *= Quaternion.Euler(0f, 0f, moveRotationAngle);
-                transform.Translate(Vector2.right * moveSpeed * Time.deltaTime);
-            }
-            else 
-            {
-                if (EnemyManager.Instance.RandomEnemy != null)
-                {
-                    target = target = EnemyManager.Instance.RandomEnemy;
-                }
-                else 
-                {
-                    transform.Translate(moveDirection * moveSpeed * Time.deltaTime);
-                }
-            }
-
-            yield return null;
-        }
     }
 
     protected virtual void OnCollisionEnter2D(Collision2D collision)
@@ -65,4 +26,18 @@ public class Projectile : MonoBehaviour
             gameObject.SetActive(false);
         }
     }
+
+    IEnumerator MoveDirectlyCoroutine()
+    {
+        while (gameObject.activeSelf)
+        {
+            Move();
+
+            yield return null;
+        }
+    }
+
+    protected void SetTarget(GameObject target) => this.target = target;
+
+    public void Move() => transform.Translate(moveDirection * moveSpeed * Time.deltaTime);
 }

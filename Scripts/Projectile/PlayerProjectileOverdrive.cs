@@ -1,22 +1,23 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerProjectileOverdrive : PlayerProjectile
 {
-    [SerializeField] float moveRotationAngle = 50f;
-
+    [SerializeField] ProjectileGuidanceSystem guidanceSystem;
+    
     protected override void OnEnable()
     {
+        SetTarget(EnemyManager.Instance.RandomEnemy);
         transform.rotation = Quaternion.identity;
-        target = EnemyManager.Instance.RandomEnemy;
 
         if (target == null)
         {
-            StartCoroutine(nameof(MoveDirectlyCoroutine));
+            base.OnEnable();
         }
         else 
         {
-            StartCoroutine(TrackTargetCoroutine(Random.Range(-moveRotationAngle, moveRotationAngle)));
+            StartCoroutine(guidanceSystem.HomingCoroutine(target));
         }
     }
 }

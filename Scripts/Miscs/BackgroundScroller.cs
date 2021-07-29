@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class BackgroundScroller : MonoBehaviour
@@ -11,8 +12,13 @@ public class BackgroundScroller : MonoBehaviour
         material = GetComponent<Renderer>().material;
     }
 
-    void Update()
+    IEnumerator Start()
     {
-        material.mainTextureOffset += scrollVelocity * Time.deltaTime;
+        while (true)
+        {
+            material.mainTextureOffset += scrollVelocity * Time.deltaTime;
+
+            yield return null;
+        }
     }
 }

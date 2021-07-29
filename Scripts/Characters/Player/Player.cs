@@ -59,6 +59,7 @@ public class Player : Character
     WaitForSeconds waitForFireInterval;
     WaitForSeconds waitForOverdriveFireInterval;
     WaitForSeconds waitHealthRegenerateTime;
+    WaitForSeconds waitDecelerationTime;
 
     WaitForFixedUpdate waitForFixedUpdate = new WaitForFixedUpdate();
 
@@ -82,6 +83,7 @@ public class Player : Character
         waitForFireInterval = new WaitForSeconds(fireInterval);
         waitForOverdriveFireInterval = new WaitForSeconds(fireInterval / overdriveFireFactor);
         waitHealthRegenerateTime = new WaitForSeconds(healthRegenerateTime);
+        waitDecelerationTime = new WaitForSeconds(decelerationTime);
     }
 
     protected override void OnEnable()
@@ -115,7 +117,6 @@ public class Player : Character
     void Start()
     {
         statsBar_HUD.Initialize(health, maxHealth);
-
         input.EnableGameplayInput();
     }
     #endregion
@@ -162,7 +163,8 @@ public class Player : Character
         }
 
         moveCoroutine = StartCoroutine(MoveCoroutine(accelerationTime, moveInput.normalized * moveSpeed, Quaternion.AngleAxis(moveRotationAngle * moveInput.y, Vector3.right)));
-        StartCoroutine(nameof(MovePositionLimitCoroutine));
+        StopCoroutine(nameof(DecelerationCoroutine));
+        StartCoroutine(nameof(MoveRangeLimatationCoroutine));
     }
 
     void StopMove()
@@ -173,7 +175,7 @@ public class Player : Character
         }
 
         moveCoroutine = StartCoroutine(MoveCoroutine(decelerationTime, Vector2.zero, Quaternion.identity));
-        StopCoroutine(nameof(MovePositionLimitCoroutine));
+        StartCoroutine(nameof(DecelerationCoroutine));
     }
 
     IEnumerator MoveCoroutine(float time, Vector2 moveVelocity, Quaternion moveRotation)
@@ -186,13 +188,13 @@ public class Player : Character
         {
             t += Time.fixedDeltaTime / time;
             rigidbody.velocity = Vector2.Lerp(previousVelocity, moveVelocity, t);
-            if (!isDodging) transform.rotation = Quaternion.Lerp(previousRotation, moveRotation, t);
+            transform.rotation = Quaternion.Lerp(previousRotation, moveRotation, t);
 
             yield return waitForFixedUpdate;
         }
     }
 
-    IEnumerator MovePositionLimitCoroutine()
+    IEnumerator MoveRangeLimatationCoroutine()
     {
         while (true)
         {
@@ -200,6 +202,13 @@ public class Player : Character
 
             yield return null;
         }
+    }
+
+    IEnumerator DecelerationCoroutine()
+    {
+        yield return waitDecelerationTime;
+        
+        StopCoroutine(nameof(MoveRangeLimatationCoroutine));
     }
     #endregion
 
