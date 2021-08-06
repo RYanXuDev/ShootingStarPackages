@@ -4,8 +4,6 @@ using UnityEngine;
 public class EnemyController : MonoBehaviour
 {
     [Header("---- MOVE ----")]
-    [SerializeField] float paddingX;
-    [SerializeField] float paddingY;
     [SerializeField] float moveSpeed = 2f;
     [SerializeField] float moveRotationAngle = 25f;
 
@@ -16,13 +14,16 @@ public class EnemyController : MonoBehaviour
     [SerializeField] float minFireInterval;
     [SerializeField] float maxFireInterval;
 
-    float maxMoveDistancePerFrame;
+    float paddingX;
+    float paddingY;
 
     WaitForFixedUpdate waitForFixedUpdate = new WaitForFixedUpdate();
 
     void Awake()
     {
-        maxMoveDistancePerFrame = moveSpeed * Time.fixedDeltaTime;
+        var size = transform.GetChild(0).GetComponent<Renderer>().bounds.size;
+        paddingX = size.x / 2f;
+        paddingY = size.y / 2f;
     }
     
     void OnEnable()
@@ -45,10 +46,10 @@ public class EnemyController : MonoBehaviour
         while (gameObject.activeSelf)
         {
             // if has not arrived targetPosition
-            if (Vector3.Distance(transform.position, targetPosition) >= maxMoveDistancePerFrame)
+            if (Vector3.Distance(transform.position, targetPosition) >= moveSpeed * Time.fixedDeltaTime)
             {
                 // keep moving to targetPosition
-                transform.position = Vector3.MoveTowards(transform.position, targetPosition, maxMoveDistancePerFrame);
+                transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.fixedDeltaTime);
                 // make enemy rotate with x axis while moving
                 transform.rotation = Quaternion.AngleAxis((targetPosition - transform.position).normalized.y * moveRotationAngle, Vector3.right);
             }
