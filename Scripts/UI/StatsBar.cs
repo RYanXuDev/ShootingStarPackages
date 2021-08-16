@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,12 +19,12 @@ public class StatsBar : MonoBehaviour
 
     Coroutine bufferedFillingCoroutine;
 
-    Canvas canvas;
-
     void Awake()
     {
-        canvas = GetComponent<Canvas>();
-        canvas.worldCamera = Camera.main;
+        if (TryGetComponent<Canvas>(out Canvas canvas))
+        {
+            canvas.worldCamera = Camera.main;
+        }
 
         waitForDelayFill = new WaitForSeconds(fillDelay);
     }
