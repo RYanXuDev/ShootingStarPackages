@@ -3,7 +3,7 @@ using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 [CreateAssetMenu(menuName = "Player Input")]
-public class PlayerInput : ScriptableObject, InputActions.IGameplayActions
+public class PlayerInput : ScriptableObject, InputActions.IGameplayActions, InputActions.IPauseMenuActions
 {
     public event UnityAction<Vector2> onMove = delegate {};
     public event UnityAction onStopMove = delegate {};
@@ -11,6 +11,8 @@ public class PlayerInput : ScriptableObject, InputActions.IGameplayActions
     public event UnityAction onStopFire = delegate {};
     public event UnityAction onDodge = delegate {};
     public event UnityAction onOverdrive = delegate {};
+    public event UnityAction onPause = delegate {};
+    public event UnityAction onUnpause = delegate {};
 
     InputActions inputActions;
 
@@ -19,6 +21,7 @@ public class PlayerInput : ScriptableObject, InputActions.IGameplayActions
         inputActions = new InputActions();
 
         inputActions.Gameplay.SetCallbacks(this);
+        inputActions.PauseMenu.SetCallbacks(this);
     }
 
     void OnDisable()
@@ -26,18 +29,32 @@ public class PlayerInput : ScriptableObject, InputActions.IGameplayActions
         DisableAllInputs();
     }
 
-    public void DisableAllInputs()
+    void SwitchActionMap(InputActionMap actionMap, bool isUIInput)
     {
-        inputActions.Gameplay.Disable();
+        inputActions.Disable();
+        actionMap.Enable();
+
+        if (isUIInput)
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
+        else 
+        {
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
     }
 
-    public void EnableGameplayInput()
-    {
-        inputActions.Gameplay.Enable();
+    public void SwitchToDynamicUpdateMode() => InputSystem.settings.updateMode = InputSettings.UpdateMode.ProcessEventsInDynamicUpdate;
 
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
-    }
+    public void SwitchToFixedUpdateMode() => InputSystem.settings.updateMode = InputSettings.UpdateMode.ProcessEventsInFixedUpdate;
+
+    public void DisableAllInputs() => inputActions.Disable();
+
+    public void EnableGameplayInput() => SwitchActionMap(inputActions.Gameplay, false);
+
+    public void EnablePauseMenuInput() => SwitchActionMap(inputActions.PauseMenu, true);
 
     public void OnMove(InputAction.CallbackContext context)
     {
@@ -78,6 +95,22 @@ public class PlayerInput : ScriptableObject, InputActions.IGameplayActions
         if (context.performed)
         {
             onOverdrive.Invoke();
+        }
+    }
+
+    public void OnPause(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            onPause.Invoke();
+        }
+    }
+
+    public void OnUnpause(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            onUnpause.Invoke();
         }
     }
 }
