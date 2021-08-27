@@ -8,10 +8,11 @@ public class SceneLoader : PersistentSingleton<SceneLoader>
     [SerializeField] float fadeTime = 3.5f;
 
     Color color;
-    
-    const string GAMEPLAY = "Gameplay";
 
-    IEnumerator LoadCoroutine(string sceneName)
+    const string GAMEPLAY = "Gameplay";
+    const string MAIN_MENU = "MainMenu";
+
+    IEnumerator LoadingCoroutine(string sceneName)
     {
         // Load new scene in background and
         var loadingOperation = SceneManager.LoadSceneAsync(sceneName);
@@ -28,6 +29,8 @@ public class SceneLoader : PersistentSingleton<SceneLoader>
 
             yield return null;
         }
+
+        yield return new WaitUntil(() => loadingOperation.progress >= 0.9f);
 
         // Activate the new scene
         loadingOperation.allowSceneActivation = true;
@@ -46,6 +49,13 @@ public class SceneLoader : PersistentSingleton<SceneLoader>
 
     public void LoadGameplayScene()
     {
-        StartCoroutine(LoadCoroutine(GAMEPLAY));
+        StopAllCoroutines();
+        StartCoroutine(LoadingCoroutine(GAMEPLAY));
+    }
+
+    public void LoadMainMenuScene()
+    {
+        StopAllCoroutines();
+        StartCoroutine(LoadingCoroutine(MAIN_MENU));
     }
 }
