@@ -6,7 +6,7 @@ public class Projectile : MonoBehaviour
     [SerializeField] GameObject hitVFX;
     [SerializeField] AudioData[] hitSFX;
     [SerializeField] float damage;
-    [SerializeField] float moveSpeed = 10f;
+    [SerializeField] protected float moveSpeed = 10f;
     [SerializeField] protected Vector2 moveDirection;
 
     protected GameObject target;
