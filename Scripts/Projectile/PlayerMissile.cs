@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMissile : PlayerProjectileOverdrive
@@ -14,9 +13,6 @@ public class PlayerMissile : PlayerProjectileOverdrive
     [Header("==== EXPLOSION ====")]
     [SerializeField] GameObject explosionVFX = null;
     [SerializeField] AudioData explosionSFX = null;
-    [SerializeField] LayerMask enemyLayerMask = default;
-    [SerializeField] float explosionRadius = 3f;
-    [SerializeField] float explosionDamage = 100f;
 
     WaitForSeconds waitVariableSpeedDelay;
     
@@ -39,22 +35,6 @@ public class PlayerMissile : PlayerProjectileOverdrive
         PoolManager.Release(explosionVFX, transform.position);
         // Play explosion SFX
         AudioManager.Instance.PlayRandomSFX(explosionSFX);
-        // Enemies within explosion radius take AOE damage
-        var colliders = Physics2D.OverlapCircleAll(transform.position, explosionRadius, enemyLayerMask);
-
-        foreach (var collider in colliders)
-        {
-            if (collider.TryGetComponent<Enemy>(out Enemy enemy))
-            {
-                enemy.TakeDamage(explosionDamage);
-            }
-        }
-    }
-
-    void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, explosionRadius);
     }
     
     IEnumerator VariableSpeedCoroutine()
@@ -71,47 +51,11 @@ public class PlayerMissile : PlayerProjectileOverdrive
         }
     }
 
-    // * AOE Damage Implementation 1
-    // * 范围伤害实现方法1
-    // [SerializeField] Collider2D explosionCollider = null;
-
-    // protected override void OnEnable()
-    // {
-    //     base.OnEnable();
-    //     StartCoroutine(nameof(VariableSpeedCoroutine));
-    //     // Disable this collider when the missile is launched
-    //     // 导弹发射时禁用这个碰撞体
-    //     explosionCollider.enabled = false;
-    // }
-
-    // protected override void OnCollisionEnter2D(Collision2D collision)
-    // {
-    //     base.OnCollisionEnter2D(collision);
-    //     // Spawn an explosion VFX
-    //     PoolManager.Release(explosionVFX, collision.GetContact(0).point);
-    //     // Play explosion SFX
-    //     AudioManager.Instance.PlayRandomSFX(explosionSFX);
-        
-    //     // Turn on this collider for explosion range detection
-    //     //启用这个碰撞体检测爆炸范围
-    //     explosionCollider.enabled = true;
-    // }
-
-    // void OnTriggerEnter2D(Collider2D other)
-    // {
-    //     // If there is any enemy within the trigger range, the enemy takes 100 explosion damage
-    //     // 当检测到任何敌人在触发器范围内，则敌人受到100点爆炸伤害
-    //     if (other.TryGetComponent<Enemy>(out Enemy enemy))
-    //     {
-    //         enemy.TakeDamage(100f);
-    //     }
-    // }
-
     // * AOE Damage Implementation 2
     // * 范围伤害实现方法2
     // !Disadvantages: To detect all enemies in the scene, slightly lower efficiency 
     // !缺点：检测场景中所有的敌人，效率稍低
-    // private void DistanceDetection()
+    // void DistanceDetection()
     // {
     //     // Loop detection all enemies in current scene
     //     // 遍历当前场景中所有的敌人
@@ -129,5 +73,31 @@ public class PlayerMissile : PlayerProjectileOverdrive
     //             }
     //         }
     //     }
+    // }
+    
+    // * AOE Damage Implementation 3
+    // * 范围伤害实现方法3
+    // [SerializeField] LayerMask enemyLayerMask = default;
+    // [SerializeField] float explosionRadius = 3f;
+    // [SerializeField] float explosionDamage = 100f;
+
+    // void PhysicsOverlapDetection()
+    // {
+    //     // Enemies within explosion radius take AOE damage
+    //     var colliders = Physics2D.OverlapCircleAll(transform.position, explosionRadius, enemyLayerMask);
+
+    //     foreach (var collider in colliders)
+    //     {
+    //         if (collider.TryGetComponent<Enemy>(out Enemy enemy))
+    //         {
+    //             enemy.TakeDamage(explosionDamage);
+    //         }
+    //     }
+    // }
+
+    // void OnDrawGizmosSelected()
+    // {
+    //     Gizmos.color = Color.yellow;
+    //     Gizmos.DrawWireSphere(transform.position, explosionRadius);
     // }
 }
