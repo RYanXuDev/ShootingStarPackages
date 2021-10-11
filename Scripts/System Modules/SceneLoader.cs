@@ -11,6 +11,7 @@ public class SceneLoader : PersistentSingleton<SceneLoader>
 
     const string GAMEPLAY = "Gameplay";
     const string MAIN_MENU = "MainMenu";
+    const string SCORING = "Scoring";
 
     IEnumerator LoadingCoroutine(string sceneName)
     {
@@ -57,5 +58,11 @@ public class SceneLoader : PersistentSingleton<SceneLoader>
     {
         StopAllCoroutines();
         StartCoroutine(LoadingCoroutine(MAIN_MENU));
+    }
+
+    public void LoadScoringScene()
+    {
+        StopAllCoroutines();
+        StartCoroutine(LoadingCoroutine(SCORING));
     }
 }

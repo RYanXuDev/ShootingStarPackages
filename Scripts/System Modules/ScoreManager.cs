@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ScoreManager : PersistentSingleton<ScoreManager>
 {
+    public int Score => score;
+
     int score;
     int currentScore;
 
