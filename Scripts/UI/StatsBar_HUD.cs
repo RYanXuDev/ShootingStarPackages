@@ -8,8 +8,7 @@ public class StatsBar_HUD : StatsBar
 
     void SetPercentText()
     {
-        //percentText.text = Mathf.RoundToInt(targetFillAmount * 100f) + "%";
-        percentText.text = targetFillAmount.ToString("P0");
+        percentText.text = Mathf.RoundToInt(targetFillAmount * 100f) + "%";
     }
 
     public override void Initialize(float currentValue, float maxValue)
