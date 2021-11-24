@@ -191,7 +191,8 @@ public class Player : Character
             StopCoroutine(moveCoroutine);
         }
 
-        moveCoroutine = StartCoroutine(MoveCoroutine(decelerationTime, Vector2.zero, Quaternion.identity));
+        moveDirection = Vector2.zero;
+        moveCoroutine = StartCoroutine(MoveCoroutine(decelerationTime, moveDirection, Quaternion.identity));
         StartCoroutine(nameof(DecelerationCoroutine));
     }
 
