@@ -5,7 +5,7 @@ public class Enemy : Character
     [SerializeField] int scorePoint = 100;
     [SerializeField] int deathEnergyBonus = 3;
 
-    void OnCollisionEnter2D(Collision2D other)
+    protected virtual void OnCollisionEnter2D(Collision2D other)
     {
         if (other.gameObject.TryGetComponent<Player>(out Player player))
         {
