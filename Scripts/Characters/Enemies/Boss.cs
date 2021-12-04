@@ -38,4 +38,9 @@ public class Boss : Enemy
         base.TakeDamage(damage);
         healthBar.UpdateStats(health, maxHealth);
     }
+
+    protected override void SetHealth()
+    {
+        maxHealth += EnemyManager.Instance.WaveNumber * healthFactor;
+    }
 }

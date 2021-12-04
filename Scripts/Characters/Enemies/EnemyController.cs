@@ -11,11 +11,14 @@ public class EnemyController : MonoBehaviour
     [SerializeField] protected GameObject[] projectiles;
     [SerializeField] protected AudioData[] projectileLaunchSFX;
     [SerializeField] protected Transform muzzle;
+    [SerializeField] protected ParticleSystem muzzleVFX;
     [SerializeField] protected float minFireInterval;
     [SerializeField] protected float maxFireInterval;
 
-    float paddingX;
+    protected float paddingX;
     float paddingY;
+
+    protected Vector3 targetPosition;
 
     WaitForFixedUpdate waitForFixedUpdate = new WaitForFixedUpdate();
 
@@ -26,7 +29,7 @@ public class EnemyController : MonoBehaviour
         paddingY = size.y / 2f;
     }
     
-    void OnEnable()
+    protected virtual void OnEnable()
     {
         StartCoroutine(nameof(RandomlyMovingCoroutine));
         StartCoroutine(nameof(RandomlyFireCoroutine));
@@ -41,21 +44,17 @@ public class EnemyController : MonoBehaviour
     {
         transform.position = Viewport.Instance.RandomEnemySpawnPosition(paddingX, paddingY);
 
-        Vector3 targetPosition = Viewport.Instance.RandomRightHalfPosition(paddingX, paddingY);
+        targetPosition = Viewport.Instance.RandomRightHalfPosition(paddingX, paddingY);
 
         while (gameObject.activeSelf)
         {
-            // if has not arrived targetPosition
             if (Vector3.Distance(transform.position, targetPosition) >= moveSpeed * Time.fixedDeltaTime)
             {
-                // keep moving to targetPosition
                 transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.fixedDeltaTime);
-                // make enemy rotate with x axis while moving
                 transform.rotation = Quaternion.AngleAxis((targetPosition - transform.position).normalized.y * moveRotationAngle, Vector3.right);
             }
             else
             {
-                // set a new targetPosition
                 targetPosition = Viewport.Instance.RandomRightHalfPosition(paddingX, paddingY);
             }
 
@@ -77,6 +76,7 @@ public class EnemyController : MonoBehaviour
             }
 
             AudioManager.Instance.PlayRandomSFX(projectileLaunchSFX);
+            muzzleVFX.Play();
         }
     }
 }
