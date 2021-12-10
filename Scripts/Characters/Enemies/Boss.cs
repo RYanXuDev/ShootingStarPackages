@@ -6,8 +6,9 @@ public class Boss : Enemy
 
     Canvas healthBarCanvas;
 
-    void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         healthBar = FindObjectOfType<BossHealthBar>();
         healthBarCanvas = healthBar.GetComponentInChildren<Canvas>();
     }

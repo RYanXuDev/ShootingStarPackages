@@ -78,6 +78,13 @@ public class Player : Character
     MissileSystem missile;
     #endregion
 
+    #region PROPERTIES
+
+    public bool IsFullHealth => health == maxHealth;
+    public bool IsFullPower => weaponPower == 2;
+
+    #endregion
+
     #region UNITY EVENT FUNCTIONS
     void Awake()
     {
@@ -140,6 +147,7 @@ public class Player : Character
     public override void TakeDamage(float damage)
     {
         base.TakeDamage(damage);
+        PowerDown();
         statsBar_HUD.UpdateStats(health, maxHealth);
         TimeController.Instance.BulletTime(SlowMotionDuration);
 
@@ -341,8 +349,37 @@ public class Player : Character
     }
     #endregion
 
+    #region MISSILE
     void LaunchMissile()
     {
         missile.Launch(muzzleMiddle);
     }
+
+    public void PickUpMissile()
+    {
+        missile.PickUp();
+    }
+    #endregion
+
+    #region WEAPON POWER
+
+    public void PowerUp()
+    {
+        weaponPower = Mathf.Min(++weaponPower, 2);
+    }
+
+    void PowerDown()
+    {
+        //* 写法1
+        // weaponPower--;
+        // weaponPower = Mathf.Clamp(weaponPower, 0, 2);
+        //* 写法2
+        // weaponPower = Mathf.Max(weaponPower - 1, 0);
+        //* 写法3
+        // weaponPower = Mathf.Clamp(weaponPower, --weaponPower, 0);
+        //* 写法4
+        weaponPower = Mathf.Max(--weaponPower, 0);
+    }
+
+    #endregion
 }

@@ -23,6 +23,18 @@ public class MissileSystem : MonoBehaviour
         MissileDisplay.UpdateAmountText(amount);
     }
 
+    public void PickUp()
+    {
+        amount++;
+        MissileDisplay.UpdateAmountText(amount);
+
+        if (amount == 1)
+        {
+            MissileDisplay.UpdateCooldownImage(0f);
+            isReady = true;
+        }
+    }
+
     public void Launch(Transform muzzleTransform)
     {
         if (amount == 0 || !isReady) return;    // TODO: Add SFX && UI VFX here
